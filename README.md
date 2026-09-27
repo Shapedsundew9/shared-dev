@@ -67,6 +67,17 @@ This gives you the best of both worlds:
 
 To make best use of the configuration use symbolic links, e.g. `ln -s .shared/ai/core/prompts/* .github/prompts/`
 
+### Syncing with the shared repository
+
+`setup.sh` and `configure-subtree.sh` add repository-local git aliases:
+
+```bash
+git shared-pull   # git subtree pull --prefix=.shared shared-dev main --squash
+git shared-push   # git subtree push --prefix=.shared shared-dev main
+```
+
+Commit changes before pushing; only committed history under `.shared/` is sent. In a fresh clone (for example a container volume), run `.shared/tools/scripts/configure-subtree.sh` (or call it from the dev container `postCreateCommand`) to restore the `shared-dev` remote, the aliases and `git subtree`.
+
 ### Host environment variables in container volumes
 
 When a repository is cloned into a container volume, Docker Compose cannot read the host environment, so `${VAR:-}` entries in `docker-compose.shared.yml` resolve to their defaults. To opt in to host values, run the following from the repository and then rebuild the dev container:

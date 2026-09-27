@@ -28,6 +28,10 @@ else
     git remote add -f "$REMOTE_NAME" "$REMOTE_URL"
 fi
 
+# Repo-local shortcuts: `git shared-pull` and `git shared-push`
+git config alias.shared-pull "subtree pull --prefix=$PREFIX $REMOTE_NAME $BRANCH --squash"
+git config alias.shared-push "subtree push --prefix=$PREFIX $REMOTE_NAME $BRANCH"
+
 # 4. Check if directory or tree already exists
 if [ -d "$PREFIX" ] || git ls-tree -d HEAD "$PREFIX" 2>/dev/null | grep -q "$PREFIX"; then
     echo "Notice: Directory '$PREFIX' already exists. Subtree is already initialized."

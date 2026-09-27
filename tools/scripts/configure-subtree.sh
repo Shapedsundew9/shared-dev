@@ -5,6 +5,8 @@ set -euo pipefail
 # Keep in sync with setup.sh.
 REMOTE_NAME="shared-dev"
 REMOTE_URL="git@github.com:shapedsundew9/shared-dev.git"
+PREFIX=".shared"
+BRANCH="main"
 
 cd "$(git rev-parse --show-toplevel)"
 
@@ -35,6 +37,10 @@ if ! git remote | grep -qx "$REMOTE_NAME"; then
     git remote add "$REMOTE_NAME" "$REMOTE_URL"
     echo "Added remote '$REMOTE_NAME' ($REMOTE_URL)."
 fi
+
+# Repo-local shortcuts: `git shared-pull` and `git shared-push`
+git config alias.shared-pull "subtree pull --prefix=$PREFIX $REMOTE_NAME $BRANCH --squash"
+git config alias.shared-push "subtree push --prefix=$PREFIX $REMOTE_NAME $BRANCH"
 
 # 3. subtree pull/push need the remote history; SSH may be unavailable during container creation.
 if ! git fetch --quiet "$REMOTE_NAME"; then
