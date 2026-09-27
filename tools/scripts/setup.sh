@@ -44,15 +44,21 @@ if [ "$CURRENT_REBASE" = "true" ]; then
     git config pull.rebase merges
 fi
 
-# 6. Ensure git-subtree is available in environment
+# 6. Ensure git-subtree is available (kept in sync with install-git-subtree.sh; inlined for curl | bash)
+BIN_DIR="$HOME/.local/bin"
 if ! git subtree --help >/dev/null 2>&1; then
-    for dir in /usr/lib/git-core /usr/libexec/git-core /usr/local/libexec/git-core; do
+    for dir in /usr/lib/git-core /usr/libexec/git-core /usr/local/libexec/git-core /usr/share/doc/git/contrib/subtree; do
         if [ -x "$dir/git-subtree" ]; then
-            export GIT_EXEC_PATH="$dir"
-            export PATH="$dir:$PATH"
+            mkdir -p "$BIN_DIR"
+            ln -sf "$dir/git-subtree" "$BIN_DIR/git-subtree"
+            echo "Notice: Linked git-subtree into $BIN_DIR."
             break
         fi
     done
+    case ":$PATH:" in
+        *":$BIN_DIR:"*) ;;
+        *) export PATH="$BIN_DIR:$PATH" ;;
+    esac
 fi
 
 if ! git subtree --help >/dev/null 2>&1; then
