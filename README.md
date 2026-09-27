@@ -4,7 +4,9 @@ This repository contains shared development environment configuration and tools 
 
 ## Setup
 
-The intended usage is as a `git subtree`. First add the remote repositoory to your git config with an alias to save typing the URL out all the time.
+The intended usage is as a `git subtree`.
+
+First *ensure your git tree is clean* snd then add the remote repositoory to your git config with an alias to save typing the URL out all the time.
 
 ```bash
 git remote add -f shared-dev https://github.com/Shapedsundew9/shared-dev.git
