@@ -4,26 +4,62 @@ This repository contains shared development environment configuration and tools 
 
 ## Setup
 
-The intended usage is as a `git subtree`.
-
-First *ensure your git tree is clean* snd then add the remote repositoory to your git config with an alias to save typing the URL out all the time.
+Run the following command in the root of the repository you wish to add the shared development environment repository. The standard, safe command line to download and run the script in one step is:
 
 ```bash
-git remote add -f shared-dev https://github.com/Shapedsundew9/shared-dev.git
-```
+curl -fsSL https://raw.githubusercontent.com/Shapedsundew9/shared-dev/main/tools/scripts/setup.sh | bash
+```  
+### Breakdown of Flags:
 
-Then pull the repo in as a sub-tree into the `.shared` folder in the root of the repo. Using the `.shared` folder name is a safe convention for rust or python tooling to ignore it. Squashing the repo commits into a single commit saves noise in the current repo's git log.
+- **-f (--fail)**: Fails silently on HTTP server errors (such as 404 Not Found or 500) so curl will never pipe an error webpage into bash.
+- **-s (--silent)**: Mutes the progress meter and progress output.
+- **-S (--show-error)**: When used with -s, ensures error messages (like network failure or host unreachable) are still shown.
+- **-L (--location)**: Follows HTTP 3xx redirects (standard for GitHub URLs).
+- **| bash**: Streams the fetched script directly into a bash shell to execute.
+
+### Notes for Users:
+
+1. Run this from anywhere inside the target project's Git repository (the script automatically identifies the top-level repository root).
+2. The working tree must be clean (no uncommitted changes) before running.
+3. The script contains the pull.rebase = merges safeguard, running this one-liner will also automatically configure the repo against rebase/sync issues.
+
+### Why is `pull.rebase = merges` needed? (The "Pull-Before-Push" Trap)
+
+When `git pull origin main` runs with `rebase = true` on unpushed commits standard git rebase drops all merge commits by default.
+
+This issue isn't unique to the initial setup—it can happen whenever two conditions meet:
+
+1. You have a local, unpushed subtree commit on your branch (such as right after running git subtree add or in the future when running `git subtree pull` to get updates).
+2. Git runs a rebase pull against the remote before those commits have been pushed.
+
+#### The VS Code "Synchronize" Behavior
+
+In VS Code, clicking the Synchronize button executes:
+
+1. `git pull` first
+2. `git push` second
+
+If there are unpushed subtree merges when git pull runs:
+
+- With `pull.rebase = true`: Git runs plain git rebase, which silently deletes all merge commits. It strips the subtree merge, takes the squashed files, and dumps them into your repository root. 
+- With `pull.rebase = merges` (the modern setting): Git runs `git rebase --rebase-merges`, which keeps merge commits and folder mappings intact.
+  
+Once the commits are pushed to GitHub (origin/main), they are part of upstream history. Subsequent normal pulls or syncs won't rebase them anyway.
+──────
+### Why `pull.rebase = merges` is Best Practice
+
+In Git versions prior to 2.18 (pre-2018), `pull.rebase` only supported true or false. Setting it to true was popular to avoid messy "Merge branch 'main' of ..." commits, but it had this known flaw: it destroyed intentional merges (like subtrees or feature branches).
+
+Git 2.18 introduced:
 
 ```bash
-git subtree add --prefix=.shared shared-dev main --squash
-git subtree pull --prefix=.shared shared-dev main --squash
+git config pull.rebase merges
 ```
 
-You can then push changes with:
+This gives you the best of both worlds:
 
-```bash
-git subtree push --prefix=.shared shared-dev main
-```
+- It keeps your regular linear commit history clean when pulling.
+- It protects and preserves intentional merge commits (like your .shared subtree).
 
 ## Usage
 
