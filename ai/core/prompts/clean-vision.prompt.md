@@ -1,6 +1,6 @@
 # Clean Vision
 
-Use the `docs/guides/vision-style-guide.md` as a reference to clean and standardize the specified vision document. Ensure that all sections, formatting, and content adhere to the guidelines outlined in the style guide.
+Use the `.shared/docs/guides/vision-style-guide.md` as a reference to clean and standardize the specified vision document. Ensure that all sections, formatting, and content adhere to the guidelines outlined in the style guide.
 
 ## Information Preservation
 
@@ -20,7 +20,7 @@ When simplifying dense passages, ensure the simplified version preserves the sam
 
 ## Change Manifest
 
-Before making changes, produce a numbered change manifest listing every planned modification: what is being moved, what is being restructured, what is being reworded, and what sections are being created. Present this manifest, and the `docs/guides/vision-style-guide.md` as a reference, for review by a reviewing agent before editing.
+Before making changes, produce a numbered change manifest listing every planned modification: what is being moved, what is being restructured, what is being reworded, and what sections are being created. Present this manifest, and the `.shared/docs/guides/vision-style-guide.md` as a reference, for review by a reviewing agent before editing.
 
 ## Post-Edit Audit
 
