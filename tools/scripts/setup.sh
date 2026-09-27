@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Configuration
+# Configuration (keep in sync with configure-subtree.sh)
 REMOTE_NAME="shared-dev"
 REMOTE_URL="git@github.com:shapedsundew9/shared-dev.git"
 PREFIX=".shared"
@@ -44,7 +44,7 @@ if [ "$CURRENT_REBASE" = "true" ]; then
     git config pull.rebase merges
 fi
 
-# 6. Ensure git-subtree is available (kept in sync with install-git-subtree.sh; inlined for curl | bash)
+# 6. Ensure git-subtree is available (kept in sync with configure-subtree.sh; inlined for curl | bash)
 BIN_DIR="$HOME/.local/bin"
 if ! git subtree --help >/dev/null 2>&1; then
     for dir in /usr/lib/git-core /usr/libexec/git-core /usr/local/libexec/git-core /usr/share/doc/git/contrib/subtree; do
