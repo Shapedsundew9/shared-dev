@@ -9,7 +9,8 @@ Run the following command in the root of the repository you wish to add the shar
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Shapedsundew9/shared-dev/main/tools/scripts/setup.sh | bash
 ```  
-### Breakdown of Flags:
+
+### Breakdown of Flags
 
 - **-f (--fail)**: Fails silently on HTTP server errors (such as 404 Not Found or 500) so curl will never pipe an error webpage into bash.
 - **-s (--silent)**: Mutes the progress meter and progress output.
@@ -17,7 +18,7 @@ curl -fsSL https://raw.githubusercontent.com/Shapedsundew9/shared-dev/main/tools
 - **-L (--location)**: Follows HTTP 3xx redirects (standard for GitHub URLs).
 - **| bash**: Streams the fetched script directly into a bash shell to execute.
 
-### Notes for Users:
+### Notes for Users
 
 1. Run this from anywhere inside the target project's Git repository (the script automatically identifies the top-level repository root).
 2. The working tree must be clean (no uncommitted changes) before running.
@@ -41,11 +42,12 @@ In VS Code, clicking the Synchronize button executes:
 
 If there are unpushed subtree merges when git pull runs:
 
-- With `pull.rebase = true`: Git runs plain git rebase, which silently deletes all merge commits. It strips the subtree merge, takes the squashed files, and dumps them into your repository root. 
+- With `pull.rebase = true`: Git runs plain git rebase, which silently deletes all merge commits. It strips the subtree merge, takes the squashed files, and dumps them into your repository root.
 - With `pull.rebase = merges` (the modern setting): Git runs `git rebase --rebase-merges`, which keeps merge commits and folder mappings intact.
   
 Once the commits are pushed to GitHub (origin/main), they are part of upstream history. Subsequent normal pulls or syncs won't rebase them anyway.
 ──────
+
 ### Why `pull.rebase = merges` is Best Practice
 
 In Git versions prior to 2.18 (pre-2018), `pull.rebase` only supported true or false. Setting it to true was popular to avoid messy "Merge branch 'main' of ..." commits, but it had this known flaw: it destroyed intentional merges (like subtrees or feature branches).
@@ -64,3 +66,13 @@ This gives you the best of both worlds:
 ## Usage
 
 To make best use of the configuration use symbolic links, e.g. `ln -s .shared/ai/core/prompts/* .github/prompts/`
+
+### Host environment variables in container volumes
+
+When a repository is cloned into a container volume, Docker Compose cannot read the host environment, so `${VAR:-}` entries in `docker-compose.shared.yml` resolve to their defaults. To opt in to host values, run the following from the repository and then rebuild the dev container:
+
+```bash
+.shared/tools/scripts/sync_devcontainer_env.py            # add --dry-run to preview
+```
+
+This mirrors each compose entry into `remoteEnv` in `.devcontainer/devcontainer.json` as `${localEnv:VAR}`, which VS Code resolves on the host. Entries whose default contains `:` (such as URLs) are skipped because `localEnv` defaults cannot contain colons. Rerun it after changing the shared compose file.
