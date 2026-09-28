@@ -164,7 +164,18 @@ def main() -> int:
     parser.add_argument(
         "--dry-run", action="store_true", help="print the result instead of writing"
     )
+    parser.add_argument(
+        "--if-opted-in",
+        action="store_true",
+        help="do nothing unless devcontainer.json already has a remoteEnv object",
+    )
     args = parser.parse_args()
+
+    original = args.devcontainer.read_text(encoding="utf-8")
+    if args.if_opted_in:
+        structural = [t for t in tokens(original) if t[0] != "comment"]
+        if locate_member(original, structural, "remoteEnv")[0] is None:
+            return 0
 
     managed, skipped = read_compose_env(args.compose)
     if not managed:
@@ -173,7 +184,6 @@ def main() -> int:
         )
         return 1
 
-    original = args.devcontainer.read_text(encoding="utf-8")
     updated = update_devcontainer(original, managed)
 
     for name in skipped:

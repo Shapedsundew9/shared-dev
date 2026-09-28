@@ -39,10 +39,14 @@ if ! git remote | grep -qx "$REMOTE_NAME"; then
 fi
 
 # Repo-local shortcuts: `git shared-pull` and `git shared-push`
-git config alias.shared-pull "subtree pull --prefix=$PREFIX $REMOTE_NAME $BRANCH --squash"
+SYNC_ENV="python3 $PREFIX/tools/scripts/sync_devcontainer_env.py --if-opted-in"
+git config alias.shared-pull "!git subtree pull --prefix=$PREFIX $REMOTE_NAME $BRANCH --squash && $SYNC_ENV"
 git config alias.shared-push "subtree push --prefix=$PREFIX $REMOTE_NAME $BRANCH"
 
 # 3. subtree pull/push need the remote history; SSH may be unavailable during container creation.
 if ! git fetch --quiet "$REMOTE_NAME"; then
     echo "Warning: could not fetch '$REMOTE_NAME'. Run 'git fetch $REMOTE_NAME' before subtree pull/push." >&2
 fi
+
+# 4. Catch compose changes that arrived without `git shared-pull` (takes effect on the next rebuild).
+$SYNC_ENV

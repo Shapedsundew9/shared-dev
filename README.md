@@ -86,4 +86,4 @@ When a repository is cloned into a container volume, Docker Compose cannot read 
 .shared/tools/scripts/sync_devcontainer_env.py            # add --dry-run to preview
 ```
 
-This mirrors each compose entry into `remoteEnv` in `.devcontainer/devcontainer.json` as `${localEnv:VAR}`, which VS Code resolves on the host. Entries whose default contains `:` (such as URLs) are skipped because `localEnv` defaults cannot contain colons. Rerun it after changing the shared compose file.
+This mirrors each compose entry into `remoteEnv` in `.devcontainer/devcontainer.json` as `${localEnv:VAR}`, which VS Code resolves on the host. Entries whose default contains `:` (such as URLs) are skipped because `localEnv` defaults cannot contain colons. Once a `remoteEnv` block exists, `git shared-pull` and `configure-subtree.sh` rerun the sync automatically; changes made during container creation apply on the next rebuild.
